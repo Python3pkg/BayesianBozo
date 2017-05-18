@@ -6,7 +6,7 @@ def hdp_for(rounded_values, level=.95):
         if not value in groupings:
             groupings[value] = 0
         groupings[value] += 1
-    sorted_lifts = sorted(list(groupings.items()), key=lambda x: x[1], reverse=False)
+    sorted_lifts = sorted(groupings.items(), key=lambda x: x[1], reverse=False)
     count = len(rounded_values)
     target_hdp_count = int(level*count)
     current_hdp_count = 0
@@ -26,8 +26,8 @@ def bayesian_bootstrap(numbers, sample_count=2500):
     if not type(i) is int:
       raise TypeError('All data must be integers.') 
   histogram = list((k, len(list(g))) for k, g in itertools.groupby(sorted(numbers)))
-  keys = [x[0] for x in histogram]
-  counts = [x[1] for x in histogram]
+  keys = map(lambda x: x[0], histogram)
+  counts = map(lambda x: x[1], histogram)
   mean_samples = [fast_mean_sample(keys, counts) for i in range(0,sample_count)]
   mean_mean = numpy.mean(mean_samples)
   return {'mean_samples': mean_samples, 'expected_value':mean_mean, 'hdp_interval':hdp_for(mean_samples)}
@@ -71,7 +71,7 @@ def _compute_bootstrapped_lift_data(control_successes, control_population, varia
 
 def _create_unimodal_hpd(distribution):
   total_observations = 1.*sum(distribution.values())
-  sorted_bins = [(x[0], x[1]/total_observations) for x in sorted(list(distribution.items()), key=lambda x: x[1], reverse=True)]
+  sorted_bins = [(x[0], x[1]/total_observations) for x in sorted(distribution.items(), key=lambda x: x[1], reverse=True)]
   min_value = None
   max_value = None
   current_level = 0
